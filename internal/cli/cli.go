@@ -32,14 +32,21 @@ Without a target unit, to shows a short list of useful equivalents.
 Separate multiple complete expressions with commas.
 
 Length:      mm, cm, m, km, in, ft, yd, mi
+Weight:      mg, g, kg, oz, lb, st
+Volume:      ml, l, tsp, tbsp, floz, cup, pt, qt, gal
 Temperature: c, f, k
+
+Customary volumes use US definitions. oz is weight; floz is volume.
 
 Examples:
   to 33mm
   to 33mm in
   to 33mm in, 120f
   to 72f
-  to 72f c`
+  to 72f c
+  to 85kg lb
+  to 500ml cup
+  to 85kg lb, 500ml cup`
 
 // Run executes the CLI without terminating the calling process.
 func Run(args []string, stdout, stderr io.Writer) int {
