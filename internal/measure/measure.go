@@ -14,6 +14,8 @@ type Dimension string
 
 const (
 	Length      Dimension = "length"
+	Weight      Dimension = "weight"
+	Volume      Dimension = "volume"
 	Temperature Dimension = "temperature"
 )
 
@@ -22,7 +24,7 @@ type Unit struct {
 	Symbol    string
 	Name      string
 	Dimension Dimension
-	factor    float64 // meters per unit for lengths
+	factor    float64 // base units per unit for linear dimensions
 	toBase    func(float64) float64
 	fromBase  func(float64) float64
 }
@@ -32,6 +34,9 @@ type Measurement struct {
 	Value float64
 	Unit  Unit
 }
+
+// ErrOutOfRange indicates that a conversion cannot be represented as float64.
+var ErrOutOfRange = errors.New("conversion result is outside supported range")
 
 var (
 	errMissingUnit     = errors.New("missing unit")
@@ -92,19 +97,19 @@ func Convert(measurement Measurement, target Unit) (float64, error) {
 		return 0, fmt.Errorf("cannot convert %s to %s", measurement.Unit.Dimension, target.Dimension)
 	}
 	if !isFinite(measurement.Value) {
-		return 0, fmt.Errorf("conversion result is outside supported range")
+		return 0, fmt.Errorf("convert %g %s to %s: %w", measurement.Value, measurement.Unit.Symbol, target.Symbol, ErrOutOfRange)
 	}
-	if measurement.Unit.Dimension == Length {
+	if measurement.Unit.Dimension == Length || measurement.Unit.Dimension == Weight || measurement.Unit.Dimension == Volume {
 		result := measurement.Value * (measurement.Unit.factor / target.factor)
 		if !isFinite(result) || (measurement.Value != 0 && result == 0) {
-			return 0, fmt.Errorf("conversion result is outside supported range")
+			return 0, fmt.Errorf("convert %g %s to %s: %w", measurement.Value, measurement.Unit.Symbol, target.Symbol, ErrOutOfRange)
 		}
 		return result, nil
 	}
 
 	base := measurement.Unit.toBase(measurement.Value)
-	if !isFinite(base) || (measurement.Unit.Dimension == Length && measurement.Value != 0 && base == 0) {
-		return 0, fmt.Errorf("conversion result is outside supported range")
+	if !isFinite(base) {
+		return 0, fmt.Errorf("convert %g %s to %s: %w", measurement.Value, measurement.Unit.Symbol, target.Symbol, ErrOutOfRange)
 	}
 	if measurement.Unit.Dimension == Temperature && base < 0 {
 		return 0, fmt.Errorf("temperature %.12g %s is below absolute zero", measurement.Value, measurement.Unit.Symbol)
@@ -119,8 +124,8 @@ func Convert(measurement Measurement, target Unit) (float64, error) {
 	} else if measurement.Unit.Symbol == "°C" && target.Symbol == "°F" {
 		result = measurement.Value/5*9 + 32
 	}
-	if !isFinite(result) || (measurement.Unit.Dimension == Length && base != 0 && result == 0) {
-		return 0, fmt.Errorf("conversion result is outside supported range")
+	if !isFinite(result) {
+		return 0, fmt.Errorf("convert %g %s to %s: %w", measurement.Value, measurement.Unit.Symbol, target.Symbol, ErrOutOfRange)
 	}
 	return result, nil
 }
@@ -165,6 +170,9 @@ func parseNumber(raw string) (float64, error) {
 }
 
 func buildAliases() map[string]Unit {
+	// International avoirdupois pound in grams and US liquid gallon in liters.
+	const pound = 453.59237
+	const gallon = 3.785411784
 	units := []struct {
 		unit    Unit
 		aliases []string
@@ -177,6 +185,21 @@ func buildAliases() map[string]Unit {
 		{linearUnit("ft", "foot", Length, 0.3048), []string{"foot", "feet", `'`}},
 		{linearUnit("yd", "yard", Length, 0.9144), []string{"yard", "yards"}},
 		{linearUnit("mi", "mile", Length, 1609.344), []string{"mile", "miles"}},
+		{linearUnit("mg", "milligram", Weight, 0.001), []string{"milligram", "milligrams"}},
+		{linearUnit("g", "gram", Weight, 1), []string{"gram", "grams"}},
+		{linearUnit("kg", "kilogram", Weight, 1000), []string{"kilogram", "kilograms"}},
+		{linearUnit("oz", "ounce", Weight, pound/16), []string{"ounce", "ounces"}},
+		{linearUnit("lb", "pound", Weight, pound), []string{"lbs", "pound", "pounds"}},
+		{linearUnit("st", "stone", Weight, pound*14), []string{"stone", "stones"}},
+		{linearUnit("ml", "milliliter", Volume, 0.001), []string{"milliliter", "milliliters", "millilitre", "millilitres"}},
+		{linearUnit("l", "liter", Volume, 1), []string{"liter", "liters", "litre", "litres"}},
+		{linearUnit("tsp", "US teaspoon", Volume, gallon/768), []string{"teaspoon", "teaspoons"}},
+		{linearUnit("tbsp", "US tablespoon", Volume, gallon/256), []string{"tablespoon", "tablespoons"}},
+		{linearUnit("floz", "US fluid ounce", Volume, gallon/128), []string{"fl oz", "fluid ounce", "fluid ounces"}},
+		{linearUnit("cup", "US cup", Volume, gallon/16), []string{"cups"}},
+		{linearUnit("pt", "US liquid pint", Volume, gallon/8), []string{"pint", "pints"}},
+		{linearUnit("qt", "US liquid quart", Volume, gallon/4), []string{"quart", "quarts"}},
+		{linearUnit("gal", "US liquid gallon", Volume, gallon), []string{"gallon", "gallons"}},
 		{temperatureUnit("°C", "Celsius", celsiusToKelvin, kelvinToCelsius), []string{"c", "celsius", "centigrade"}},
 		{temperatureUnit("°F", "Fahrenheit", fahrenheitToKelvin, kelvinToFahrenheit), []string{"f", "fahrenheit"}},
 		{temperatureUnit("K", "Kelvin", identity, identity), []string{"k", "kelvin", "kelvins"}},

@@ -1,6 +1,7 @@
 package presentation
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -17,7 +18,7 @@ func Direct(measurement measure.Measurement, target measure.Unit) (string, error
 	if err != nil {
 		return "", err
 	}
-	return formatNumber(value) + " " + target.Symbol, nil
+	return formatNumber(value) + " " + unitLabel(target), nil
 }
 
 // Summary renders a short set of useful equivalents for a measurement.
@@ -26,7 +27,7 @@ func Summary(measurement measure.Measurement) (string, error) {
 		return "", err
 	}
 
-	lines := []string{formatNumber(measurement.Value) + " " + measurement.Unit.Symbol}
+	lines := []string{formatNumber(measurement.Value) + " " + unitLabel(measurement.Unit)}
 	switch measurement.Unit.Dimension {
 	case measure.Length:
 		lengthLines, err := lengthSummary(measurement)
@@ -34,6 +35,12 @@ func Summary(measurement measure.Measurement) (string, error) {
 			return "", err
 		}
 		lines = append(lines, lengthLines...)
+	case measure.Weight, measure.Volume:
+		otherLines, err := linearSummary(measurement)
+		if err != nil {
+			return "", err
+		}
+		lines = append(lines, otherLines...)
 	case measure.Temperature:
 		for _, symbol := range []string{"c", "f", "k"} {
 			target := mustUnit(symbol)
@@ -50,6 +57,33 @@ func Summary(measurement measure.Measurement) (string, error) {
 		return "", fmt.Errorf("unsupported dimension %q", measurement.Unit.Dimension)
 	}
 	return strings.Join(lines, "\n"), nil
+}
+
+func unitLabel(unit measure.Unit) string {
+	if unit.Dimension == measure.Volume && unit.Symbol != "ml" && unit.Symbol != "l" {
+		return unit.Symbol + " (US)"
+	}
+	return unit.Symbol
+}
+
+func linearSummary(measurement measure.Measurement) ([]string, error) {
+	base, smallLimit, largeLimit := "g", 1.0, 1000.0
+	profiles := [][]string{{"mg", "g", "oz"}, {"g", "oz", "lb"}, {"kg", "lb", "st"}}
+	if measurement.Unit.Dimension == measure.Volume {
+		base, smallLimit, largeLimit = "ml", 15, 1000
+		profiles = [][]string{{"ml", "tsp", "tbsp"}, {"ml", "floz", "cup"}, {"l", "qt", "gal"}}
+	}
+	// Convert thresholds instead of the input to avoid intermediate range errors.
+	for index, limit := range []float64{smallLimit, largeLimit} {
+		threshold, err := measure.Convert(measure.Measurement{Value: limit, Unit: mustUnit(base)}, measurement.Unit)
+		if err != nil {
+			return nil, err
+		}
+		if math.Abs(measurement.Value) < threshold {
+			return conversionLines(measurement, profiles[index], true)
+		}
+	}
+	return conversionLines(measurement, profiles[2], true)
 }
 
 func lengthSummary(measurement measure.Measurement) ([]string, error) {
@@ -108,6 +142,10 @@ func lengthSummary(measurement measure.Measurement) ([]string, error) {
 }
 
 func convertedLines(measurement measure.Measurement, symbols []string) ([]string, error) {
+	return conversionLines(measurement, symbols, false)
+}
+
+func conversionLines(measurement measure.Measurement, symbols []string, skipOutOfRange bool) ([]string, error) {
 	lines := make([]string, 0, len(symbols))
 	for _, symbol := range symbols {
 		target := mustUnit(symbol)
@@ -115,6 +153,9 @@ func convertedLines(measurement measure.Measurement, symbols []string) ([]string
 			continue
 		}
 		line, err := Direct(measurement, target)
+		if skipOutOfRange && errors.Is(err, measure.ErrOutOfRange) {
+			continue
+		}
 		if err != nil {
 			return nil, err
 		}

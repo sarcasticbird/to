@@ -1,7 +1,8 @@
 # to
 
-Measurements, translated. `to` is a tiny command-line converter for lengths
-and temperatures. Ask for inches, Celsius, or another unit—or leave off the
+Measurements, translated. `to` is a tiny command-line converter for lengths,
+weights, volumes, and temperatures. Ask for inches, pounds, cups, Celsius,
+or another unit—or leave off the
 target and get a short list of useful equivalents.
 
 One Go binary. No runtime dependencies, network requests, or configuration.
@@ -53,6 +54,8 @@ to 33mm in                    Convert to one unit
 to 33 mm inches               Separate the value and unit
 to 1.8m                       Show meters, feet and inches, and yards
 to 72f c                      Convert Fahrenheit to Celsius
+to 85kg lb                    Convert kilograms to pounds
+to 500ml cup                  Convert milliliters to US cups
 to 44mm, 100mm, 120cm          Convert several measurements
 to 33mm in, 120f               Mix direct conversions and summaries
 to --help                     Show the command reference
@@ -80,6 +83,8 @@ $ to -40 f c
 Omit the target to get equivalents suited to the measurement's size. Small
 lengths show metric units and inches; human-sized lengths show feet and inches;
 distances show kilometers and miles. Temperatures show the other two scales.
+Weights range from milligrams and ounces to kilograms, pounds, and stone.
+Volumes range from teaspoons and tablespoons to liters, quarts, and gallons.
 
 ```text
 $ to 1.8m
@@ -117,6 +122,8 @@ invalid items report their position and produce no partial results.
 | Dimension | Symbols | Names and aliases |
 | --- | --- | --- |
 | Length | `mm`, `cm`, `m`, `km`, `in`, `ft`, `yd`, `mi` | Metric and US/UK singular or plural names, including `metre` spellings |
+| Weight | `mg`, `g`, `kg`, `oz`, `lb`, `st` | Milligrams, grams, kilograms, ounces, pounds (`lbs`), stone |
+| Volume | `ml`, `l`, `tsp`, `tbsp`, `floz`, `cup`, `pt`, `qt`, `gal` | Metric and US customary singular or plural names, including `litre` spellings and quoted `"fluid ounces"` |
 | Temperature | `c`, `f`, `k` | Celsius, Fahrenheit, Kelvin, and optional degree symbols |
 
 Symbols and names are case-insensitive. Decimal and scientific notation work,
@@ -125,6 +132,36 @@ including `.5m` and `1e3mm`. Quote multiword aliases in your shell:
 ```sh
 to 20 "degrees celsius" f, 1m cm
 ```
+
+### Weights and volumes
+
+```text
+$ to 85kg lb, 500ml cup
+187.4 lb
+
+2.113 cup (US)
+
+$ to 12oz g
+340.2 g
+
+$ to 2gal l
+7.571 l
+```
+
+`oz` means avoirdupois weight; `floz` means fluid volume. Customary volumes
+use US liquid definitions and are labeled `(US)` in output. A cup is 8 fluid
+ounces, a tablespoon is half a fluid ounce, and a teaspoon is one-sixth.
+These are not Imperial, dry-volume, or rounded nutrition-label measures.
+`c` remains Celsius; use `cup` for cups.
+
+Weight and volume cannot be converted into each other without knowing the
+ingredient's density, so commands such as `to 1cup g` report an error.
+Negative values are accepted as signed quantities, consistent with length
+conversions. Time zones are not included.
+Weight and volume summaries omit equivalents outside the numeric range;
+explicit conversions to those units still report an error.
+
+Unit definitions follow the [NIST conversion tables](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9).
 
 ## Precision and errors
 
