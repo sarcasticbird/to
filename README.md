@@ -20,6 +20,13 @@ $ to 72f c
 
 ## Install
 
+With [Homebrew](https://brew.sh/):
+
+```sh
+brew install sarcasticbird/tap/to
+to 33mm in
+```
+
 With Go 1.26 or newer:
 
 ```sh
@@ -28,8 +35,7 @@ to 33mm in
 ```
 
 Make sure your Go binary directory (`GOBIN`, or `$(go env GOPATH)/bin` by
-default) is on your `PATH`. Until the first tagged release, `@latest` installs
-the latest available development revision.
+default) is on your `PATH`.
 
 ### Build from source
 
@@ -44,7 +50,6 @@ to 33mm
 ```
 
 To install from the checkout instead, run `flox activate -- go install ./cmd/to`.
-Homebrew packaging is planned; there is no formula yet.
 
 ## Everyday commands
 
