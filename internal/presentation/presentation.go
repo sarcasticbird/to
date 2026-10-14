@@ -35,7 +35,7 @@ func Summary(measurement measure.Measurement) (string, error) {
 			return "", err
 		}
 		lines = append(lines, lengthLines...)
-	case measure.Weight, measure.Volume:
+	case measure.Weight, measure.Volume, measure.Speed:
 		otherLines, err := linearSummary(measurement)
 		if err != nil {
 			return "", err
@@ -67,6 +67,9 @@ func unitLabel(unit measure.Unit) string {
 }
 
 func linearSummary(measurement measure.Measurement) ([]string, error) {
+	if measurement.Unit.Dimension == measure.Speed {
+		return conversionLines(measurement, []string{"m/s", "km/h", "mph", "kn"}, true)
+	}
 	base, smallLimit, largeLimit := "g", 1.0, 1000.0
 	profiles := [][]string{{"mg", "g", "oz"}, {"g", "oz", "lb"}, {"kg", "lb", "st"}}
 	if measurement.Unit.Dimension == measure.Volume {

@@ -3,6 +3,9 @@
   "manifest": {
     "schema-version": "1.16.0",
     "install": {
+      "gcc": {
+        "pkg-path": "gcc"
+      },
       "go": {
         "pkg-path": "go",
         "version": "1.26.7"
@@ -13,6 +16,110 @@
     "options": {}
   },
   "packages": [
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/0fgcnhhk5pkf1s9zcii1vh63lzybfp33-gcc-wrapper-15.3.0.drv",
+      "description": "GNU Compiler Collection, version 15.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=ef34387ddd751e1ab8857adf4676492d32eb24ec",
+      "name": "gcc-wrapper-15.3.0",
+      "pname": "gcc",
+      "rev": "ef34387ddd751e1ab8857adf4676492d32eb24ec",
+      "rev_count": 1073009,
+      "rev_date": "2026-09-13T08:01:44Z",
+      "scrape_date": "2026-09-15T04:58:08.812469Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "15.3.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/28qvf7dmva1ms9cm937qmm6xsxrvwpy0-gcc-wrapper-15.3.0-info",
+        "man": "/nix/store/c14af1gr7g4cr89yxj9i7hl8n3izv75l-gcc-wrapper-15.3.0-man",
+        "out": "/nix/store/r2rxcj66b6jkyzn68pk42frmh8zybzkp-gcc-wrapper-15.3.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/27pyw666mq7gcya5zskf4lnhbds89092-gcc-wrapper-15.3.0.drv",
+      "description": "GNU Compiler Collection, version 15.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=ef34387ddd751e1ab8857adf4676492d32eb24ec",
+      "name": "gcc-wrapper-15.3.0",
+      "pname": "gcc",
+      "rev": "ef34387ddd751e1ab8857adf4676492d32eb24ec",
+      "rev_count": 1073009,
+      "rev_date": "2026-09-13T08:01:44Z",
+      "scrape_date": "2026-09-15T05:30:10.159110Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "15.3.0",
+      "outputs_to_install": [
+        "man",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/x17rgagvkg5s7mqbv7mqp1asa6xyhc8p-gcc-wrapper-15.3.0-info",
+        "man": "/nix/store/4vw8y282g8p3f58rfxkn9k4z84rv10s9-gcc-wrapper-15.3.0-man",
+        "out": "/nix/store/z2qkl46kv87zcs2sfwfjgc75nq0hbzhf-gcc-wrapper-15.3.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/lyb848yjq8pnlwkqnzlnkvjzqa4cvaqh-gcc-wrapper-15.3.0.drv",
+      "description": "GNU Compiler Collection, version 15.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=ef34387ddd751e1ab8857adf4676492d32eb24ec",
+      "name": "gcc-wrapper-15.3.0",
+      "pname": "gcc",
+      "rev": "ef34387ddd751e1ab8857adf4676492d32eb24ec",
+      "rev_count": 1073009,
+      "rev_date": "2026-09-13T08:01:44Z",
+      "scrape_date": "2026-09-15T06:07:17.728367Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "15.3.0",
+      "outputs_to_install": [
+        "man",
+        "man",
+        "out",
+        "out",
+        "out",
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/gja6ahm2ivajy5crhjqrbcws2khxnkaa-gcc-wrapper-15.3.0-info",
+        "man": "/nix/store/x30anv345f9v2ilfm901g18rlcprbpd1-gcc-wrapper-15.3.0-man",
+        "out": "/nix/store/z4c6k0mrlkwl3s4w9ysxc8vq1wylm3ms-gcc-wrapper-15.3.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
     {
       "attr_path": "go",
       "broken": false,
