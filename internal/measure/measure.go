@@ -16,6 +16,7 @@ const (
 	Length      Dimension = "length"
 	Weight      Dimension = "weight"
 	Volume      Dimension = "volume"
+	Speed       Dimension = "speed"
 	Temperature Dimension = "temperature"
 )
 
@@ -99,7 +100,7 @@ func Convert(measurement Measurement, target Unit) (float64, error) {
 	if !isFinite(measurement.Value) {
 		return 0, fmt.Errorf("convert %g %s to %s: %w", measurement.Value, measurement.Unit.Symbol, target.Symbol, ErrOutOfRange)
 	}
-	if measurement.Unit.Dimension == Length || measurement.Unit.Dimension == Weight || measurement.Unit.Dimension == Volume {
+	if measurement.Unit.Dimension == Length || measurement.Unit.Dimension == Weight || measurement.Unit.Dimension == Volume || measurement.Unit.Dimension == Speed {
 		result := measurement.Value * (measurement.Unit.factor / target.factor)
 		if !isFinite(result) || (measurement.Value != 0 && result == 0) {
 			return 0, fmt.Errorf("convert %g %s to %s: %w", measurement.Value, measurement.Unit.Symbol, target.Symbol, ErrOutOfRange)
@@ -200,6 +201,11 @@ func buildAliases() map[string]Unit {
 		{linearUnit("pt", "US liquid pint", Volume, gallon/8), []string{"pint", "pints"}},
 		{linearUnit("qt", "US liquid quart", Volume, gallon/4), []string{"quart", "quarts"}},
 		{linearUnit("gal", "US liquid gallon", Volume, gallon), []string{"gallon", "gallons"}},
+		{linearUnit("m/s", "meter per second", Speed, 1), []string{"meter per second", "metre per second", "meters per second", "metres per second", "mps"}},
+		{linearUnit("km/h", "kilometer per hour", Speed, 1/3.6), []string{"kilometer per hour", "kilometre per hour", "kilometers per hour", "kilometres per hour", "kph", "kmph"}},
+		{linearUnit("mph", "mile per hour", Speed, 0.44704), []string{"mile per hour", "miles per hour"}},
+		{linearUnit("ft/s", "foot per second", Speed, 0.3048), []string{"foot per second", "feet per second", "fps"}},
+		{linearUnit("kn", "knot", Speed, 1852.0/3600), []string{"knot", "knots", "kt"}},
 		{temperatureUnit("°C", "Celsius", celsiusToKelvin, kelvinToCelsius), []string{"c", "celsius", "centigrade"}},
 		{temperatureUnit("°F", "Fahrenheit", fahrenheitToKelvin, kelvinToFahrenheit), []string{"f", "fahrenheit"}},
 		{temperatureUnit("K", "Kelvin", identity, identity), []string{"k", "kelvin", "kelvins"}},

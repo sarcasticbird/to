@@ -1,7 +1,7 @@
 # to
 
 Measurements, translated. `to` is a tiny command-line converter for lengths,
-weights, volumes, and temperatures. Ask for inches, pounds, cups, Celsius,
+weights, volumes, speeds, and temperatures. Ask for inches, pounds, cups, mph, Celsius,
 or another unit—or leave off the
 target and get a short list of useful equivalents.
 
@@ -56,6 +56,8 @@ to 1.8m                       Show meters, feet and inches, and yards
 to 72f c                      Convert Fahrenheit to Celsius
 to 85kg lb                    Convert kilograms to pounds
 to 500ml cup                  Convert milliliters to US cups
+to 100km/h mph                Convert kilometers per hour to miles per hour
+to 60mph                      Show common speed equivalents
 to 44mm, 100mm, 120cm          Convert several measurements
 to 33mm in, 120f               Mix direct conversions and summaries
 to --help                     Show the command reference
@@ -85,6 +87,8 @@ lengths show metric units and inches; human-sized lengths show feet and inches;
 distances show kilometers and miles. Temperatures show the other two scales.
 Weights range from milligrams and ounces to kilograms, pounds, and stone.
 Volumes range from teaspoons and tablespoons to liters, quarts, and gallons.
+Speeds show meters per second, kilometers per hour, miles per hour, and knots,
+omitting the source unit. Feet per second is available as an explicit target.
 
 ```text
 $ to 1.8m
@@ -124,6 +128,7 @@ invalid items report their position and produce no partial results.
 | Length | `mm`, `cm`, `m`, `km`, `in`, `ft`, `yd`, `mi` | Metric and US/UK singular or plural names, including `metre` spellings |
 | Weight | `mg`, `g`, `kg`, `oz`, `lb`, `st` | Milligrams, grams, kilograms, ounces, pounds (`lbs`), stone |
 | Volume | `ml`, `l`, `tsp`, `tbsp`, `floz`, `cup`, `pt`, `qt`, `gal` | Metric and US customary singular or plural names, including `litre` spellings and quoted `"fluid ounces"` |
+| Speed | `m/s`, `km/h`, `mph`, `ft/s`, `kn` | Meter/metre per second (`mps`), kilometer/kilometre per hour (`kph`, `kmph`), mile per hour, foot/feet per second (`fps`), knot (`kt`), and plural names |
 | Temperature | `c`, `f`, `k` | Celsius, Fahrenheit, Kelvin, and optional degree symbols |
 
 Symbols and names are case-insensitive. Decimal and scientific notation work,
@@ -163,6 +168,48 @@ explicit conversions to those units still report an error.
 
 Unit definitions follow the [NIST conversion tables](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9).
 
+### Speeds
+
+Attached and separated forms work, and multiword aliases must be quoted:
+
+```text
+$ to 100km/h mph
+62.14 mph
+
+$ to 100 km/h mph
+62.14 mph
+
+$ to 10 "metres per second" "miles per hour"
+22.37 mph
+
+$ to 60mph
+60 mph
+  26.82 m/s
+  96.56 km/h
+  52.14 kn
+
+$ to 1m/s ft/s
+3.281 ft/s
+
+$ to 100km/h mph, 85kg lb
+62.14 mph
+
+187.4 lb
+```
+
+The exact definitions are `1 km/h = 1/3.6 m/s`, `1 mph = 0.44704 m/s`,
+`1 ft/s = 0.3048 m/s`, and `1 kn = 1852/3600 m/s`.
+Aliases include `meter per second`, `metre per second`, `meters per second`,
+`metres per second`, `kilometer per hour`, `kilometre per hour`,
+`kilometers per hour`, `kilometres per hour`, `mile per hour`, `miles per hour`,
+`foot per second`, `feet per second`, `knot`, and `knots`, plus the short
+aliases in the table above.
+
+Speed summaries use the same four-significant-digit formatting as direct
+conversions. They omit only equivalents outside the numeric range; explicit
+conversions to those units report an error. Signed speeds are accepted.
+Speed cannot be converted to length, weight, volume, or temperature.
+
 ## Precision and errors
 
 Decimal output is rounded to four significant digits, with scientific notation
@@ -186,7 +233,8 @@ Results go to stdout; diagnostics go to stderr.
 
 ## Develop to
 
-Run the checks and build a local binary with the pinned Flox environment:
+Run the checks and build a local binary with the pinned Flox environment.
+It includes Go and GCC; the race detector requires a C compiler:
 
 ```sh
 flox activate -- go test ./...

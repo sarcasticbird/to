@@ -34,9 +34,21 @@ Separate multiple complete expressions with commas.
 Length:      mm, cm, m, km, in, ft, yd, mi
 Weight:      mg, g, kg, oz, lb, st
 Volume:      ml, l, tsp, tbsp, floz, cup, pt, qt, gal
+Speed:       m/s, km/h, mph, ft/s, kn
 Temperature: c, f, k
 
 Customary volumes use US definitions. oz is weight; floz is volume.
+
+Speed aliases (quote multiword names; singular and plural accepted):
+  m/s:  meter/metre per second, meters/metres per second, mps
+  km/h: kilometer/kilometre per hour, kilometers/kilometres per hour, kph, kmph
+  mph:  mile/miles per hour
+  ft/s: foot/feet per second, fps
+  kn:   knot/knots, kt
+Exact definitions: 1 km/h = 1/3.6 m/s; 1 mph = 0.44704 m/s;
+  1 ft/s = 0.3048 m/s; 1 kn = 1852/3600 m/s.
+Speed summaries show m/s, km/h, mph, kn, omitting the source unit and
+  out-of-range equivalents. ft/s is available as an explicit target.
 
 Examples:
   to 33mm
@@ -46,7 +58,13 @@ Examples:
   to 72f c
   to 85kg lb
   to 500ml cup
-  to 85kg lb, 500ml cup`
+  to 85kg lb, 500ml cup
+  to 100km/h mph
+  to 100 km/h mph
+  to 10 "metres per second" "miles per hour"
+  to 60mph
+  to 1m/s ft/s
+  to 100km/h mph, 85kg lb`
 
 // Run executes the CLI without terminating the calling process.
 func Run(args []string, stdout, stderr io.Writer) int {
